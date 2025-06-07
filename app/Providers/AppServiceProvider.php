@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
+
 use GuzzleHttp\Client;
 use App\Services\CurrencyConversionService;
 
@@ -33,8 +35,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
+     // تأكد من إضافة هذا في الأعلى مع باقي الـ use statements
+
     public function boot(): void
     {
-        app()->setLocale('tr');
+        app()->setLocale('tr');         // تعيين اللغة التركية
+        URL::forceScheme('https');      // إجبار الروابط على استخدام https
     }
+
+  
 }
