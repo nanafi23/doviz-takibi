@@ -6,7 +6,7 @@ nixPkgs = [
   "php82Extensions.mbstring",
   "php82Extensions.xml",
   "php82Extensions.curl",
-  "composer" # ✅ أضف هذه السطر
+  "php82Packages.composer"  # ✅ الصيغة الصحيحة لإضافة Composer
 ]
 
 [phases.build]
