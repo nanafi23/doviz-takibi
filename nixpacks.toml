@@ -5,7 +5,8 @@ nixPkgs = [
   "php82Extensions.sqlite3",
   "php82Extensions.mbstring",
   "php82Extensions.xml",
-  "php82Extensions.curl"
+  "php82Extensions.curl",
+  "composer" # ✅ أضف هذه السطر
 ]
 
 [phases.build]
