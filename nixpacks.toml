@@ -5,13 +5,13 @@ nixPkgs = [
   "php82Extensions.pdo",
   "php82Extensions.pdo_mysql",
   "php82Extensions.mbstring",
+  "php82Extensions.tokenizer",
   "php82Extensions.xml",
-  "php82Extensions.curl"
 ]
 
 [phases.build]
 cmds = [
-  "cp .env.example .env",                        # ✅ ينسخ .env.example إلى .env
+  "test -f .env || cp .env.example .env",
   "composer install --no-dev --optimize-autoloader",
   "php artisan key:generate --force"
 ]
