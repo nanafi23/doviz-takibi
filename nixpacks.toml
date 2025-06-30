@@ -6,7 +6,7 @@ nixPkgs = [
   "php82Extensions.pdo_mysql",
   "php82Extensions.mbstring",
   "php82Extensions.tokenizer",
-  "php82Extensions.xml",
+  "php82Extensions.xml"
 ]
 
 [phases.build]
@@ -14,11 +14,14 @@ cmds = [
   # نسخ ملف .env إذا لم يكن موجودًا
   "test -f .env || cp .env.example .env",
 
-  # تثبيت الـ dependencies
+  # تثبيت الحزم
   "composer install --no-dev --optimize-autoloader",
 
-  # إنشاء APP_KEY بعد التأكد من وجود .env و vendor
-  "php artisan key:generate --force"
+  # إنشاء مفتاح التطبيق
+  "php artisan key:generate --force",
+
+  # تنفيذ الترحيلات (اختياري، احذفه إن لم ترد تنفيذه هنا)
+  "php artisan migrate --force || echo 'Migration failed, continuing...'"
 ]
 
 [start]
