@@ -6,7 +6,7 @@ nixPkgs = [
   "php82Extensions.pdo_mysql",
   "php82Extensions.mbstring",
   "php82Extensions.tokenizer",
-  "php82Extensions.xml"
+  "php82Extensions.xml",
   "nodejs_20"
 ]
 
