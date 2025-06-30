@@ -7,21 +7,28 @@ nixPkgs = [
   "php82Extensions.mbstring",
   "php82Extensions.tokenizer",
   "php82Extensions.xml"
+  "nodejs_20"
 ]
 
 [phases.build]
 cmds = [
   # نسخ ملف .env إذا لم يكن موجودًا
-  "test -f .env || cp .env.example .env",
+  "if [ ! -f .env ]; then cp .env.example .env; fi",
 
-  # تثبيت الحزم
+  # تثبيت مكتبات PHP
   "composer install --no-dev --optimize-autoloader",
 
-  # إنشاء مفتاح التطبيق
+  # توليد مفتاح التطبيق
   "php artisan key:generate --force",
 
-  # تنفيذ الترحيلات (اختياري، احذفه إن لم ترد تنفيذه هنا)
-  "php artisan migrate --force || echo 'Migration failed, continuing...'"
+  # تنفيذ الترحيلات، لو فشلت كمل بدون توقف
+  "php artisan migrate --force || echo 'Migration failed, continuing...'",
+
+  # تثبيت مكتبات npm (إن وجد ملف package.json)
+  "if [ -f package.json ]; then npm ci; fi",
+
+  # تجميع ملفات الواجهة (اختياري)
+  "if [ -f vite.config.js ]; then npm run build; fi"
 ]
 
 [start]
