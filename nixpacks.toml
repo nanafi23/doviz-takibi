@@ -11,8 +11,13 @@ nixPkgs = [
 
 [phases.build]
 cmds = [
+  # نسخ ملف .env إذا لم يكن موجودًا
   "test -f .env || cp .env.example .env",
+
+  # تثبيت الـ dependencies
   "composer install --no-dev --optimize-autoloader",
+
+  # إنشاء APP_KEY بعد التأكد من وجود .env و vendor
   "php artisan key:generate --force"
 ]
 
