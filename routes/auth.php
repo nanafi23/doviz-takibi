@@ -37,11 +37,11 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
-        ->name('legacy.verification.notice');
+        ->name(\Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::emailVerification()) ? 'legacy.verification.notice' : 'verification.notice');
 
     Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
         ->middleware(['signed', 'throttle:6,1'])
-        ->name('legacy.verification.verify');
+        ->name(\Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::emailVerification()) ? 'legacy.verification.verify' : 'verification.verify');
 
     Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1')
