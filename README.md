@@ -6,7 +6,7 @@ A Laravel 12 university web programming project by Omar Gouda. The application c
 
 PHP 8.2+, Laravel 12, Blade, Vite and a relational database. Composer dependencies include Livewire, Jetstream and Sanctum; consult `composer.json` and the source for the actual integrations.
 
-[![Application checks](https://github.com/nanafi23/doviz-takibi/actions/workflows/checks.yml/badge.svg)](https://github.com/nanafi23/doviz-takibi/actions/workflows/checks.yml)
+[![Application checks](https://github.com/Omar-Gouda5/doviz-takibi/actions/workflows/checks.yml/badge.svg)](https://github.com/Omar-Gouda5/doviz-takibi/actions/workflows/checks.yml)
 
 ## Local setup
 
@@ -55,5 +55,5 @@ The desktop browser experience, an existing MySQL database and historical produc
 
 ## Related projects
 
-- [Financial markets frontend prototype](https://github.com/nanafi23/DOVIZE): a separate static HTML/CSS/JavaScript project.
+- [Financial markets frontend prototype](https://github.com/Omar-Gouda5/DOVIZE): a separate static HTML/CSS/JavaScript project.
 - `doviz-takipi`: an older closely related Laravel copy; `doviz-takibi` is the selected maintenance version.
