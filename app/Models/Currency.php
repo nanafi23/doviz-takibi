@@ -25,6 +25,8 @@ class Currency extends Model
     /**
      * القيم الافتراضية للنموذج
      */
+    protected $casts = ['is_active' => 'boolean', 'rate' => 'float'];
+
     protected $attributes = [
         'is_active' => true,
         'rate' => 1.000000,

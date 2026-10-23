@@ -76,7 +76,7 @@
                         <div class="relative">
                             <select name="from_currency" id="from_currency" class="block w-full pl-10 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md" required>
                                 @foreach($currencies as $currency)
-                                    <option value="{{ $currency->id }}" data-code="{{ $currency->code }}" data-flag="{{ $currency->flag_emoji ?? '' }}" {{ old('from_currency') == $currency->id ? 'selected' : '' }}>
+                                    <option value="{{ $currency->id }}" data-code="{{ $currency->code }}" data-rate="{{ $currency->rate }}" data-flag="{{ $currency->flag_emoji ?? '' }}" {{ old('from_currency') == $currency->id ? 'selected' : '' }}>
                                         {{ $currency->code }} - {{ $currency->name }}
                                     </option>
                                 @endforeach
@@ -100,7 +100,7 @@
                         <div class="relative">
                             <select name="to_currency" id="to_currency" class="block w-full pl-10 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md" required>
                                 @foreach($currencies as $currency)
-                                    <option value="{{ $currency->id }}" data-code="{{ $currency->code }}" data-flag="{{ $currency->flag_emoji ?? '' }}" {{ old('to_currency') == $currency->id ? 'selected' : '' }}>
+                                    <option value="{{ $currency->id }}" data-code="{{ $currency->code }}" data-rate="{{ $currency->rate }}" data-flag="{{ $currency->flag_emoji ?? '' }}" {{ old('to_currency') == $currency->id ? 'selected' : '' }}>
                                         {{ $currency->code }} - {{ $currency->name }}
                                     </option>
                                 @endforeach
@@ -117,7 +117,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-500">Güncel Kur:</p>
-                            <p class="text-lg font-medium" id="current-rate">1 USD = 29.85 TRY</p>
+                            <p class="text-lg font-medium" id="current-rate">—</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Son Güncelleme:</p>
@@ -206,7 +206,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="font-bold">{{ number_format($pair->toCurrency->rate / $pair->fromCurrency->rate, 2) }}</p>
+                            <p class="font-bold">{{ number_format($pair->toCurrency->rate / max($pair->fromCurrency->rate, 0.000001), 2) }}</p>
                         </div>
                     </div>
                 </div>
@@ -231,8 +231,8 @@
             const toOption = toSelect.options[toSelect.selectedIndex];
             
             // Update flags
-            fromFlag.textContent = fromOption.dataset.flag || '🏳️';
-            toFlag.textContent = toOption.dataset.flag || '🏳️';
+            fromFlag.textContent = fromOption?.dataset.flag || '🏳️';
+            toFlag.textContent = toOption?.dataset.flag || '🏳️';
             
             // Update current rate display
             updateCurrentRate();
@@ -244,16 +244,14 @@
             const toSelect = document.getElementById('to_currency');
             const rateDisplay = document.getElementById('current-rate');
             
-            const fromCode = fromSelect.options[fromSelect.selectedIndex].dataset.code;
-            const toCode = toSelect.options[toSelect.selectedIndex].dataset.code;
-            
-            // In a real implementation, you would fetch the actual rate from your backend
-            // This is a simplified version with hardcoded rates
-            let rate = 29.85;
-            if (fromCode === 'EUR' && toCode === 'TRY') rate = 32.45;
-            if (fromCode === 'GBP' && toCode === 'TRY') rate = 38.12;
-            
-            rateDisplay.textContent = `1 ${fromCode} = ${rate} ${toCode}`;
+            const fromOption = fromSelect.selectedOptions[0];
+            const toOption = toSelect.selectedOptions[0];
+            if (!fromOption || !toOption) {
+                rateDisplay.textContent = '—';
+                return;
+            }
+            const rate = Number(toOption.dataset.rate) / Number(fromOption.dataset.rate);
+            rateDisplay.textContent = `1 ${fromOption.dataset.code} = ${rate.toFixed(6)} ${toOption.dataset.code}`;
         }
         
         // Swap currencies

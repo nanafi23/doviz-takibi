@@ -22,16 +22,16 @@ class DashboardController extends Controller
         $inactiveCurrencies = $totalCurrencies - $activeCurrencies;
         
         // Get conversion statistics
-        $totalConversions = Conversion::count();
+        $totalConversions = Conversion::where('user_id', auth()->id())->count();
         
         // Get recent conversions (last 24 hours)
-        $recentConversions = Conversion::with(['fromCurrency', 'toCurrency'])
+        $recentConversions = Conversion::with(['fromCurrency', 'toCurrency'])->where('user_id', auth()->id())
             ->where('created_at', '>=', now()->subDay())
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
             
-        $recentConversionsCount = Conversion::where('created_at', '>=', now()->subDay())->count();
+        $recentConversionsCount = Conversion::where('user_id', auth()->id())->where('created_at', '>=', now()->subDay())->count();
         
         // Get popular currencies
         $popularCurrencies = Currency::where('is_active', true)

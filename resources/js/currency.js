@@ -24,8 +24,8 @@ function formatCurrency(amount, currencyCode, locale = 'tr-TR') {
  * @returns {number} The converted amount
  */
 function convertCurrency(amount, fromRate, toRate) {
-    // Convert to base currency (TRY) first, then to target currency
-    return (amount * fromRate) / toRate;
+    // Rates are currency units per one shared base unit (USD).
+    return (amount / fromRate) * toRate;
 }
 
 /**
@@ -193,7 +193,7 @@ function setupEventListeners() {
     document.querySelectorAll('.relative button').forEach(button => {
         button.addEventListener('click', function() {
             const dropdown = this.closest('.relative').querySelector('.dropdown-menu');
-            dropdown.classList.toggle('hidden');
+            if (dropdown) dropdown.classList.toggle('hidden');
         });
     });
     
