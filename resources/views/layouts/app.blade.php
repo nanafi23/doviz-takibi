@@ -299,6 +299,7 @@
 
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto bg-gray-50">
+                {{ $slot ?? '' }}
                 @yield('content')
             </main>
             
@@ -325,7 +326,7 @@
         document.querySelectorAll('.relative button').forEach(button => {
             button.addEventListener('click', function() {
                 const dropdown = this.closest('.relative').querySelector('.dropdown-menu');
-                dropdown.classList.toggle('hidden');
+                if (dropdown) dropdown.classList.toggle('hidden');
             });
         });
         

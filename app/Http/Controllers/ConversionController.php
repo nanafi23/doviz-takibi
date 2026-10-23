@@ -16,13 +16,14 @@ class ConversionController extends Controller
      */
     public function index()
     {
-        // Get active currencies - FIX: Changed is_active check to false instead of true
-        $currencies = Currency::where('is_active', false)
+        // Offer only active currencies with valid stored rates.
+        $currencies = Currency::active()->where('rate', '>', 0)
             ->orderBy('code')
             ->get();
         
         // Get recent conversions
         $recentConversions = Conversion::with(['fromCurrency', 'toCurrency'])
+            ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -52,7 +53,7 @@ class ConversionController extends Controller
                 return response()->json([
                     'success' => false,
                     'errors' => $validator->errors(),
-                ]);
+                ], 422);
             }
             
             return redirect()->route('cevir.index')
@@ -64,15 +65,15 @@ class ConversionController extends Controller
         $fromCurrency = Currency::findOrFail($request->from_currency);
         $toCurrency = Currency::findOrFail($request->to_currency);
         
-        // Check if currencies are active - FIX: Changed is_active check to false instead of true
-        if ($fromCurrency->is_active || $toCurrency->is_active) {
+        // Reject inactive currencies and invalid stored rates before dividing.
+        if (!$fromCurrency->is_active || !$toCurrency->is_active || $fromCurrency->rate <= 0 || $toCurrency->rate <= 0) {
             $error = __('Seçilen para birimlerinden biri veya her ikisi de aktif değil.');
             
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
                     'error' => $error,
-                ]);
+                ], 422);
             }
             
             return redirect()->route('cevir.index')
@@ -160,8 +161,8 @@ class ConversionController extends Controller
      */
     private function calculateConversion($amount, $fromRate, $toRate)
     {
-        // Convert to base currency (TRY) first, then to target currency
-        return ($amount * $fromRate) / $toRate;
+        // Stored rates use one common base: currency units per USD.
+        return ($amount / $fromRate) * $toRate;
     }
     
     /**
@@ -172,7 +173,8 @@ class ConversionController extends Controller
     private function getPopularCurrencyPairs()
     {
         // Get most frequently converted currency pairs
-        $popularPairs = Conversion::select('from_currency_id', 'to_currency_id', \DB::raw('count(*) as count'))
+        $popularPairs = Conversion::select('from_currency_id', 'to_currency_id', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->where('user_id', auth()->id())
             ->with(['fromCurrency', 'toCurrency'])
             ->groupBy('from_currency_id', 'to_currency_id')
             ->orderBy('count', 'desc')
@@ -181,10 +183,10 @@ class ConversionController extends Controller
         
         // If no conversions yet, return some default pairs
         if ($popularPairs->isEmpty()) {
-            $tryId = Currency::where('code', 'TRY')->first()->id ?? null;
-            $usdId = Currency::where('code', 'USD')->first()->id ?? null;
-            $eurId = Currency::where('code', 'EUR')->first()->id ?? null;
-            $gbpId = Currency::where('code', 'GBP')->first()->id ?? null;
+            $tryId = Currency::where('code', 'TRY')->value('id');
+            $usdId = Currency::where('code', 'USD')->value('id');
+            $eurId = Currency::where('code', 'EUR')->value('id');
+            $gbpId = Currency::where('code', 'GBP')->value('id');
             
             if ($tryId && $usdId && $eurId && $gbpId) {
                 $defaultPairs = [

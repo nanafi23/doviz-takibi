@@ -69,7 +69,7 @@ class CurrencyController extends Controller
         $currency->symbol = $request->symbol;
         $currency->country = $request->country;
         $currency->rate = $request->rate;
-        $currency->is_active = $request->has('is_active');
+        $currency->is_active = $request->boolean('is_active');
         $currency->flag_emoji = $flagEmoji;
         $currency->change = 0; // Initial change is 0
         $currency->save();
@@ -135,7 +135,7 @@ class CurrencyController extends Controller
         $currency->symbol = $request->symbol;
         $currency->country = $request->country;
         $currency->rate = $request->rate;
-        $currency->is_active = $request->has('is_active');
+        $currency->is_active = $request->boolean('is_active');
         $currency->flag_emoji = $flagEmoji;
         $currency->change = $change;
         $currency->save();
@@ -191,7 +191,7 @@ class CurrencyController extends Controller
         $currency->is_active = !$currency->is_active;
         $currency->save();
         
-        $status = $currency->is_active ? __('pasif') : __('aktif');
+        $status = $currency->is_active ? __('aktif') : __('pasif');
         
         return redirect()->route('currencies.index')
             ->with('success', __('Para birimi başarıyla :status yapıldı.', ['status' => $status]));

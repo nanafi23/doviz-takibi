@@ -1,0 +1,27 @@
+name: Application checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  currency-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite, dom, xml
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+      - run: php artisan route:cache
+      - run: php artisan view:cache

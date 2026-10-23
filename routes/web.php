@@ -7,11 +7,9 @@ use App\Http\Controllers\ConversionController;
 
 // صفحات عامة
 Route::get('/', fn() => view('welcome'))->name('home');
-Route::get('/login', fn() => view('login'))->name('login');
-Route::get('/register', fn() => view('register'))->name('register');
 Route::get('/ozellikler', fn() => view('features'))->name('features');
 Route::get('/hakkimizda', fn() => view('about'))->name('about');
-Route::get('/fiyatlandirma', fn() => view('pricing'))->name('pricing');
+Route::get('/fiyatlandirma', fn() => view('fiyatlandirma'))->name('pricing');
 
 // صفحات المصادقة
 require __DIR__.'/auth.php';
@@ -34,14 +32,14 @@ Route::middleware(['auth'])->group(function () {
 
     // ----- التحويلات (conversions) -----
     Route::prefix('cevir')->name('cevir.')->group(function () {
-            Route::match(['get', 'post'], '/', [ConversionController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/yeni', [ConversionController::class, 'create'])->name('create');
-            Route::match(['get', 'post'], '/yeni', [ConversionController::class, 'store'])->name('store');
-            Route::match(['get', 'post'], '/cevir', [ConversionController::class, 'convert'])->name('convert');
-            Route::match(['get', 'post'], '/cevir/{conversion}/duzenle', [ConversionController::class, 'edit'])->name('cevir.edit');
-            Route::match(['get', 'post'], '/{conversion}', [ConversionController::class, 'update'])->name('update');
-            Route::match(['get', 'post'], '/{conversion}', [ConversionController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('/', [ConversionController::class, 'index'])->name('index');
+        Route::get('/yeni', [ConversionController::class, 'index'])->name('create');
+        Route::post('/cevir', [ConversionController::class, 'convert'])->name('convert');
+    });
+
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
 
         Route::get('/borsa', [App\Http\Controllers\DashboardController::class, 'borsa'])->name('borsa');
 
