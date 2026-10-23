@@ -1,5 +1,13 @@
-@props(['for'])
+@props(['for' => null, 'messages' => []])
 
-@error($for)
-    <p {{ $attributes->merge(['class' => 'text-sm text-red-600']) }}>{{ $message }}</p>
-@enderror
+@php
+    $validationMessages = $for ? $errors->get($for) : (array) $messages;
+@endphp
+
+@if ($validationMessages)
+    <ul {{ $attributes->merge(['class' => 'text-sm text-red-600']) }}>
+        @foreach ($validationMessages as $message)
+            <li>{{ $message }}</li>
+        @endforeach
+    </ul>
+@endif
